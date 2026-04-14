@@ -50,6 +50,56 @@ namespace CALEB
             {
                 products[i].DisplayProduct();
             }
+
+            int[] CartIds = new int[5];
+            int[] CartQty = new int[5];
+            double[] CartSubTotal = new double[5];
+
+            int CartCount = 0;
+
+            Console.WriteLine("Do you want to purchase a product?");
+            string Choice = Console.ReadLine();
+
+            while (Choice.ToUpper() == "Y")
+            {
+                Console.Write("Product List: \n");
+                for (int i = 0; i < products.Length; i++)
+                {
+                    products[i].DisplayProduct();
+                }
+
+                Console.WriteLine("Enter Product ID: ");
+                int ProductNumber = Convert.ToInt32(Console.ReadLine());
+
+                if (!int.TryParse(Console.ReadLine(), out ProductNumber))
+                {
+                    Console.WriteLine("Invalid Product Number!");
+                    continue;
+                }
+
+                if (ProductNumber < 1 || ProductNumber > products.Length)
+                {
+                    Console.WriteLine("Invalid Product Number!");
+                    continue;
+                }
+
+                Product chosen = products[ProductNumber - 1];
+
+                Console.WriteLine("Input Quantity: ");
+                int quantity = Convert.ToInt32(Console.ReadLine());
+
+                if (!int.TryParse(Console.ReadLine(), out quantity) || quantity == 0)
+                {
+                    Console.WriteLine("Invalid Quantity Input!");
+                    continue;
+                }
+
+                if (!chosen.HasEnoughStock(quantity))
+                {
+                    Console.WriteLine("Not Enough Stock Available!");
+                    continue;
+                }
+            }
         }
     }
 }
