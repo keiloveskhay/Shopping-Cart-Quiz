@@ -1,0 +1,5 @@
+READ ME (about why there are two SHOPPING CART files)
+
+
+I initially uploaded my file name "SHOPPING CART.cs". Then on my second upload I renamed the file as "SHOPPING CART PART 2". I researched as to why they are now separate files and apparently it's because I changed the file name.
+
