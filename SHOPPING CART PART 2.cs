@@ -41,8 +41,60 @@ namespace CALEB
         }
     }
 
+    class Order
+    {
+        public int ReceiptNumber;
+        public double FinalTotal;
+    }
+
     internal class Program
     {
+        static int receiptCounter = 1;
+        static List<Order> orderHistory = new List<Order>();
+
+        // Y/N Validation
+        public static string GetYesNo(string message)
+        {
+            while (true)
+            {
+                Console.Write(message);
+                string input = Console.ReadLine().ToUpper();
+
+                if (input == "Y" || input == "N")
+                    return input;
+
+                Console.WriteLine("Invalid input. Please enter Y or N only.");
+            }
+        }
+
+        // Validation
+        public static int GetInt(string message)
+        {
+            int value;
+            while (true)
+            {
+                Console.Write(message);
+                if (int.TryParse(Console.ReadLine(), out value))
+                    return value;
+
+                Console.WriteLine("Invalid number.");
+            }
+        }
+
+        // Validation
+        public static double GetDouble(string message)
+        {
+            double value;
+            while (true)
+            {
+                Console.Write(message);
+                if (double.TryParse(Console.ReadLine(), out value))
+                    return value;
+
+                Console.WriteLine("Invalid number.");
+            }
+        }
+
         public static Product FindProduct(Product[] products, int id)
         {
             for (int i = 0; i < products.Length; i++)
@@ -144,9 +196,7 @@ namespace CALEB
                         break;
 
                     case "2":
-                        Console.Write("Enter ID: ");
-                        int rid = int.Parse(Console.ReadLine());
-
+                        int rid = GetInt("Enter ID: ");
                         var removeItem = cart.Find(i => i.CartItemID == rid);
 
                         if (removeItem != null)
@@ -161,17 +211,14 @@ namespace CALEB
                         break;
 
                     case "3":
-                        Console.Write("Enter ID: ");
-                        int uid = int.Parse(Console.ReadLine());
-
+                        int uid = GetInt("Enter ID: ");
                         var updateItem = cart.Find(i => i.CartItemID == uid);
 
                         if (updateItem != null)
                         {
                             Product p = FindProduct(products, uid);
 
-                            Console.Write("New qty: ");
-                            int qty = int.Parse(Console.ReadLine());
+                            int qty = GetInt("New qty: ");
 
                             p.RemainingStock += updateItem.CartItemQuantity;
 
@@ -261,26 +308,26 @@ namespace CALEB
                         products[i].DisplayProduct();
 
             Console.WriteLine("\nFilter? (Y/N)");
-            if (Console.ReadLine().ToUpper() == "Y")
+            if (GetYesNo("") == "Y")
                 CategoryFilter(products);
 
             string buy = "Y";
 
             while (buy.ToUpper() == "Y")
             {
-                Console.Write("Product ID: ");
-                int id = int.Parse(Console.ReadLine());
-
+                int id = GetInt("Product ID: ");
                 Product p = FindProduct(products, id);
 
                 if (p == null)
                     continue;
 
-                Console.Write("Qty: ");
-                int qty = int.Parse(Console.ReadLine());
+                int qty = GetInt("Qty: ");
 
                 if (!p.HasEnoughStock(qty))
+                {
+                    Console.WriteLine("Not enough stock.");
                     continue;
+                }
 
                 p.DeductStock(qty);
 
@@ -292,12 +339,10 @@ namespace CALEB
                     CartItemSubTotal = p.GetItemTotal(qty)
                 });
 
-                Console.Write("Cart menu? (Y/N): ");
-                if (Console.ReadLine().ToUpper() == "Y")
+                if (GetYesNo("Cart menu? (Y/N): ") == "Y")
                     ManageCart(cart, products);
 
-                Console.Write("Continue buying products? (Y/N): ");
-                buy = Console.ReadLine();
+                buy = GetYesNo("Continue buying products? (Y/N): ");
             }
 
             double total = 0;
@@ -311,7 +356,37 @@ namespace CALEB
 
             Console.WriteLine($"TOTAL: {total} PHP");
 
-            
+            // Payment Validation
+            double payment;
+            while (true)
+            {
+                payment = GetDouble("Enter payment: ");
+
+                if (payment >= total)
+                    break;
+
+                Console.WriteLine("Insufficient payment.");
+            }
+
+            double change = payment - total;
+
+            // Receipt Info
+            Console.WriteLine($"\nReceipt No: {receiptCounter.ToString("D4")}");
+            Console.WriteLine($"Date: {DateTime.Now}");
+            Console.WriteLine($"Final Total: {total} PHP");
+            Console.WriteLine($"Payment: {payment} PHP");
+            Console.WriteLine($"Change: {change} PHP");
+
+            orderHistory.Add(new Order { ReceiptNumber = receiptCounter, FinalTotal = total });
+            receiptCounter++;
+
+            if (GetYesNo("View order history? (Y/N): ") == "Y")
+            {
+                Console.WriteLine("\nORDER HISTORY");
+                foreach (var o in orderHistory)
+                    Console.WriteLine($"Receipt #{o.ReceiptNumber.ToString("D4")} - Final Total: {o.FinalTotal} PHP");
+            }
+
             LowStockAlert(products);
         }
     }
