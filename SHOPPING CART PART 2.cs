@@ -5,19 +5,21 @@ namespace CALEB
 {
     class CartItem
     {
-        public int CartItemID;
-        public string CartItemName;
-        public int CartItemQuantity;
-        public double CartItemSubTotal;
+        public int CartItemID { get; set; }
+        public string CartItemName { get; set; }
+        public int CartItemQuantity { get; set; }
+        public double CartItemSubTotal { get; set; }
     }
+
+
 
     class Product
     {
-        public int Id;
-        public string Name;
-        public double Price;
-        public int RemainingStock;
-        public string Category;
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public int RemainingStock { get; set; }
+        public string Category { get; set; }
 
         // Display Product Info
         public void DisplayProduct()
@@ -43,8 +45,8 @@ namespace CALEB
 
     class Order
     {
-        public int ReceiptNumber;
-        public double FinalTotal;
+        public int ReceiptNumber { get; set; }
+        public double FinalTotal { get; set; }
     }
 
     internal class Program
