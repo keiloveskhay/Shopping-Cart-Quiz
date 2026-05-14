@@ -2,6 +2,14 @@
 
 namespace CALEB
 {
+    class CartItem
+    {
+        public int CartItemID;
+        public string CartItemName;
+        public int CartItemQuantity;
+        public double CartItemSubTotal;
+    }
+    
     class Product
     {
         public int Id;
@@ -36,6 +44,51 @@ namespace CALEB
 
     internal class Program
     {
+        public static void ManageCart(List<CartItem> cart2, Product[] products)
+        {
+            Console.WriteLine("Cart Management");
+            Console.WriteLine("1. View Cart\n2. Remove Item\n3. Update Quantity\n4. Clear Cart\n5. Checkout");
+            Console.WriteLine("Pick an Option!");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                // For Viewing Your Cart
+                case "1":
+                    for (var item in cart2)
+                    {
+                        if (cart2.Count == 0)
+                        {
+                            Console.WriteLine("Your cart is empty!");
+                        }
+
+                        Console.WriteLine($"{item.CartItemName} Quantity: {item.CartItemQuantity} Price: {item.CartItemSubTotal} PHP");
+                        break;
+                    }
+
+                // For Removing an Item in Your Cart
+                case "2":
+                    Console.WriteLine("Enter the ID of the product you want to remove!");
+                    if (int.TryParse(Console.ReadLine(), out int idToRemove))
+                    {
+                        var itemToRemove = cart2.Find(i => i.ProductId == idToRemove);
+                        if (itemToRemove != null)
+                        {
+                            products[idToRemove - 1].RemainingStock += itemToRemove.Quantity;
+                            cart.Remove(itemToRemove);
+                            Console.WriteLine("Item removed.");
+                        }
+                        else Console.WriteLine("Item not found in cart.");
+                    }
+                    else Console.WriteLine("Invalid ID.");
+                    break;
+
+                case "3": 
+
+
+            }
+        }
+        
         static void Main(string[] args)
         {
             // Product List
@@ -54,13 +107,8 @@ namespace CALEB
                 products[i].DisplayProduct();
             }
 
-            // Cart Arrays
-            int[] CartIds = new int[5];
-            int[] CartQty = new int[5];
-            double[] CartSubTotal = new double[5];
-            int CartCount = 0;
+            List<CartItem> Cart = new List<CartItem>();
 
-           
             string Choice;
 
             while (true)
@@ -128,34 +176,7 @@ namespace CALEB
                     continue;
                 }
 
-                // Check if Item Already in Cart
-                bool ItemFound = false;
-
-                for (int i = 0; i < CartCount; i++)
-                {
-                    if (CartIds[i] == chosen.Id)
-                    {
-                        CartQty[i] += quantity;
-                        CartSubTotal[i] += chosen.GetItemTotal(quantity);
-                        ItemFound = true;
-                        break;
-                    }
-                }
-
-                // Add New Item to Cart
-                if (!ItemFound)
-                {
-                    if (CartCount >= CartIds.Length)
-                    {
-                        Console.WriteLine("Your Cart is Full!");
-                        continue;
-                    }
-
-                    CartIds[CartCount] = chosen.Id;
-                    CartQty[CartCount] = quantity;
-                    CartSubTotal[CartCount] = chosen.GetItemTotal(quantity);
-                    CartCount++;
-                }
+    
 
                 // Deduct Stock
                 chosen.DeductStock(quantity);
@@ -178,7 +199,7 @@ namespace CALEB
             // Discount
             double Discount = 0;
 
-            if (TotalAmount > 5000)
+            if (TotalAmount >= 5000)
             {
                 Discount = TotalAmount * 0.10;
             }
